@@ -1,0 +1,25 @@
+package com.wham.moo.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val StellaPrimary = Color(0xFFFF7F50)
+val StellaPrimaryDark = Color(0xFFDD6236)
+val StellaPrimaryContainer = Color(0xFFFFF0EB)
+val StellaAccent = Color(0xFF8B4513)
+val StellaAccentLight = Color(0xFFFFD299)
+val StellaBg = Color(0xFFF7EEDD)
+val StellaBg2 = Color(0xFFEDE4D3)
+val StellaBg3 = Color(0xFFC4BCAB)
+val StellaSoft = Color(0xFFFAF5EB)
+val StellaTextMain = Color(0xFF2C2C2C)
+val StellaTextSub = Color(0xFF5E574B)
+val StellaTextLight = Color(0xFF948B7C)
+val GreenMood = Color(0xFF22C55E)
+val GreenMoodBg = Color(0xFFDCFCE7)
+val OrangeMood = Color(0xFFF97316)
+val OrangeMoodBg = Color(0xFFFFEDD5)
+val BlueMood = Color(0xFF3B82F6)
+val BlueMoodBg = Color(0xFFDBEAFE)
+val PurpleMood = Color(0xFFA855F7)
+val PurpleMoodBg = Color(0xFFF3E8FF)
+val DoneGreen = Color(0xFF4ADE80)
