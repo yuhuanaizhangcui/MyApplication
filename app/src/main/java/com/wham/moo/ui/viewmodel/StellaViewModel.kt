@@ -21,6 +21,13 @@ import java.util.Locale
 class StellaViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = (application as StellaApplication).repository
+    private val prefs = application.getSharedPreferences("stella_prefs", Application.MODE_PRIVATE)
+
+    private val _userNickname = MutableStateFlow(prefs.getString("nickname", "星愿用户") ?: "星愿用户")
+    val userNickname: StateFlow<String> = _userNickname
+
+    private val _avatarIndex = MutableStateFlow(prefs.getInt("avatar_index", 0))
+    val avatarIndex: StateFlow<Int> = _avatarIndex
 
     val allDiaries = repository.allDiaries.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
@@ -111,6 +118,16 @@ class StellaViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             repository.addMeditation(MeditationSession(date = date, durationMinutes = durationMinutes))
         }
+    }
+
+    fun setNickname(name: String) {
+        _userNickname.value = name
+        prefs.edit().putString("nickname", name).apply()
+    }
+
+    fun setAvatarIndex(index: Int) {
+        _avatarIndex.value = index
+        prefs.edit().putInt("avatar_index", index).apply()
     }
 }
 

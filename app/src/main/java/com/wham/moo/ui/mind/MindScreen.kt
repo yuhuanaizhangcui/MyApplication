@@ -30,7 +30,6 @@ import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -57,15 +56,14 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.wham.moo.R
 import com.wham.moo.ui.components.StellaCard
 import com.wham.moo.ui.theme.DoneGreen
 import com.wham.moo.ui.theme.StellaAccent
 import com.wham.moo.ui.theme.StellaBg2
 import com.wham.moo.ui.theme.StellaPrimary
-import com.wham.moo.ui.theme.StellaPrimaryContainer
 import com.wham.moo.ui.theme.StellaSoft
 import com.wham.moo.ui.theme.StellaTextLight
 import com.wham.moo.ui.theme.StellaTextMain
@@ -73,8 +71,77 @@ import com.wham.moo.ui.theme.StellaTextSub
 import com.wham.moo.ui.viewmodel.StellaViewModel
 import kotlinx.coroutines.delay
 
+class AudioPlayer {
+    private var mediaPlayer: MediaPlayer? = null
+    var activeTrack by mutableStateOf<String?>(null)
+        private set
+
+    fun play(context: Context, track: String, resId: Int, fallbackUrl: String) {
+        if (activeTrack == track) {
+            stop()
+            return
+        }
+        stop()
+        val mp = MediaPlayer()
+        mediaPlayer = mp
+        try {
+            val afd = context.resources.openRawResourceFd(resId)
+            mp.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+            afd.close()
+            mp.isLooping = true
+            mp.prepareAsync()
+            mp.setOnPreparedListener { it.start() }
+            activeTrack = track
+        } catch (_: Exception) {
+            try {
+                mp.reset()
+                mp.setDataSource(fallbackUrl)
+                mp.isLooping = true
+                mp.prepareAsync()
+                mp.setOnPreparedListener { it.start() }
+                activeTrack = track
+            } catch (_: Exception) {
+                mp.release()
+                mediaPlayer = null
+            }
+        }
+    }
+
+    fun stop() {
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
+        activeTrack = null
+    }
+}
+
 @Composable
 fun MindScreen(viewModel: StellaViewModel) {
+    val context = LocalContext.current
+    var selectedMinutes by remember { mutableIntStateOf(3) }
+    var isRunning by remember { mutableStateOf(false) }
+    var remainingSeconds by remember { mutableIntStateOf(selectedMinutes * 60) }
+    var showDone by remember { mutableStateOf(false) }
+
+    val audioPlayer = remember { AudioPlayer() }
+
+    DisposableEffect(Unit) {
+        onDispose { audioPlayer.stop() }
+    }
+
+    LaunchedEffect(isRunning) {
+        while (isRunning && remainingSeconds > 0) {
+            delay(1000)
+            remainingSeconds--
+        }
+        if (isRunning && remainingSeconds <= 0) {
+            isRunning = false
+            showDone = true
+            audioPlayer.stop()
+            viewModel.addMeditationSession(selectedMinutes)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -94,25 +161,55 @@ fun MindScreen(viewModel: StellaViewModel) {
             modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
         )
 
-        MeditationTimerCard(viewModel)
+        MeditationTimerCard(
+            selectedMinutes = selectedMinutes,
+            isRunning = isRunning,
+            remainingSeconds = remainingSeconds,
+            showDone = showDone,
+            onStart = {
+                isRunning = true
+                remainingSeconds = selectedMinutes * 60
+                showDone = false
+            },
+            onStop = {
+                isRunning = false
+                remainingSeconds = selectedMinutes * 60
+                audioPlayer.stop()
+            },
+            onReset = {
+                showDone = false
+                remainingSeconds = selectedMinutes * 60
+            },
+            onSelectMinutes = { selectedMinutes = it }
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             AudioCard(
+                modifier = Modifier.weight(1f),
                 title = "白噪音",
                 subTitle = "雨声助眠",
                 icon = Icons.Default.MusicNote,
                 tint = Color(0xFF14B8A6),
                 bg = Color(0xFFF0FDFA),
-                audioUrl = "https://cdn.pixabay.com/download/audio/2022/03/24/audio_c8c8a73467.mp3"
+                track = "whitenoise",
+                resId = R.raw.whitenoise,
+                fallbackUrl = "https://cdn.pixabay.com/download/audio/2022/03/24/audio_c8c8a73467.mp3",
+                audioPlayer = audioPlayer,
+                context = context
             )
             AudioCard(
+                modifier = Modifier.weight(1f),
                 title = "治愈放松",
                 subTitle = "轻音乐",
                 icon = Icons.Default.Eco,
                 tint = DoneGreen,
                 bg = Color(0xFFF0FDF4),
-                audioUrl = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"
+                track = "healing",
+                resId = R.raw.healing,
+                fallbackUrl = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",
+                audioPlayer = audioPlayer,
+                context = context
             )
         }
         Spacer(modifier = Modifier.height(80.dp))
@@ -127,38 +224,21 @@ fun AudioCard(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     tint: Color,
     bg: Color,
-    audioUrl: String
+    track: String,
+    resId: Int,
+    fallbackUrl: String,
+    audioPlayer: AudioPlayer,
+    context: Context
 ) {
-    val context = LocalContext.current
-    var isPlaying by remember { mutableStateOf(false) }
-    val mediaPlayer = remember { MediaPlayer() }
+    val isPlaying = audioPlayer.activeTrack == track
 
-    DisposableEffect(Unit) {
-        onDispose {
-            if (mediaPlayer.isPlaying) mediaPlayer.stop()
-            mediaPlayer.release()
+    StellaCard(modifier = modifier, onClick = {
+        if (isPlaying) {
+            audioPlayer.stop()
+        } else {
+            audioPlayer.play(context, track, resId, fallbackUrl)
         }
-    }
-
-    fun play() {
-        try {
-            mediaPlayer.reset()
-            mediaPlayer.setDataSource(audioUrl)
-            mediaPlayer.prepareAsync()
-            mediaPlayer.setOnPreparedListener { it.start() }
-            mediaPlayer.setOnCompletionListener { isPlaying = false }
-            isPlaying = true
-        } catch (_: Exception) {
-            isPlaying = false
-        }
-    }
-
-    fun pause() {
-        if (mediaPlayer.isPlaying) mediaPlayer.pause()
-        isPlaying = false
-    }
-
-    StellaCard(modifier = modifier, onClick = { if (isPlaying) pause() else play() }) {
+    }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -169,22 +249,15 @@ fun AudioCard(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(bg),
+                    .background(if (isPlaying) tint.copy(alpha = 0.15f) else bg),
                 contentAlignment = Alignment.Center
             ) {
-                if (isPlaying) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(tint.copy(alpha = 0.15f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.Pause, contentDescription = null, tint = tint, modifier = Modifier.size(24.dp))
-                    }
-                } else {
-                    Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(24.dp))
-                }
+                Icon(
+                    if (isPlaying) Icons.Default.Pause else icon,
+                    contentDescription = null,
+                    tint = tint,
+                    modifier = Modifier.size(24.dp)
+                )
             }
             Text(title, fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(top = 8.dp))
             Text(subTitle, fontSize = 11.sp, color = StellaTextSub)
@@ -193,12 +266,16 @@ fun AudioCard(
 }
 
 @Composable
-fun MeditationTimerCard(viewModel: StellaViewModel) {
-    var selectedMinutes by remember { mutableIntStateOf(3) }
-    var isRunning by remember { mutableStateOf(false) }
-    var remainingSeconds by remember { mutableIntStateOf(selectedMinutes * 60) }
-    var showDone by remember { mutableStateOf(false) }
-
+fun MeditationTimerCard(
+    selectedMinutes: Int,
+    isRunning: Boolean,
+    remainingSeconds: Int,
+    showDone: Boolean,
+    onStart: () -> Unit,
+    onStop: () -> Unit,
+    onReset: () -> Unit,
+    onSelectMinutes: (Int) -> Unit
+) {
     val totalSeconds = selectedMinutes * 60
     val progress = if (isRunning || showDone) remainingSeconds / totalSeconds.toFloat() else 1f
 
@@ -225,22 +302,6 @@ fun MeditationTimerCard(viewModel: StellaViewModel) {
         breatheProgress < 0.5f -> "屏息"
         breatheProgress < 0.875f -> "呼气"
         else -> "停息"
-    }
-
-    LaunchedEffect(isRunning) {
-        while (isRunning && remainingSeconds > 0) {
-            delay(1000)
-            remainingSeconds--
-        }
-        if (isRunning && remainingSeconds <= 0) {
-            isRunning = false
-            showDone = true
-            viewModel.addMeditationSession(selectedMinutes)
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose { isRunning = false }
     }
 
     StellaCard {
@@ -290,72 +351,76 @@ fun MeditationTimerCard(viewModel: StellaViewModel) {
                     )
                 }
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Box(
-                        modifier = Modifier
-                            .size(80.dp)
-                            .scale(if (isRunning) breatheScale else 1f)
-                            .clip(CircleShape)
-                            .background(
-                                Brush.radialGradient(
-                                    listOf(
-                                        StellaPrimary.copy(alpha = if (isRunning) breatheAlpha else 0.2f),
-                                        StellaPrimary.copy(alpha = if (isRunning) breatheAlpha * 0.5f else 0.05f)
-                                    )
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Air,
-                            contentDescription = null,
-                            tint = StellaPrimary.copy(alpha = if (isRunning) 1f else 0.6f),
-                            modifier = Modifier.size(32.dp)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    if (isRunning) {
+                        Text(
+                            text = breatheText,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = StellaPrimary
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = formatTime(remainingSeconds),
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = StellaTextMain
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .size(80.dp)
+                                .scale(if (isRunning) breatheScale else 1f)
+                                .clip(CircleShape)
+                                .background(
+                                    Brush.radialGradient(
+                                        listOf(
+                                            StellaPrimary.copy(alpha = 0.2f),
+                                            StellaPrimary.copy(alpha = 0.05f)
+                                        )
+                                    )
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Air,
+                                contentDescription = null,
+                                tint = StellaPrimary.copy(alpha = 0.6f),
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
                     }
                 }
             }
 
             Text(
-                text = if (showDone) "练习完成 🎉" else if (isRunning) breatheText else "深呼吸练习",
+                text = if (showDone) "练习完成 🎉" else if (isRunning) "保持专注呼吸..." else "深呼吸练习",
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 color = if (isRunning) StellaPrimary else StellaTextMain,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-            Text(
-                text = if (isRunning) formatTime(remainingSeconds) else "$selectedMinutes 分钟",
-                fontSize = 14.sp,
-                color = StellaTextSub,
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 12.dp)
             )
 
             Row(
                 modifier = Modifier.padding(top = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                DurationChip(3, selectedMinutes, isRunning) {
-                    if (!isRunning) { selectedMinutes = 3; remainingSeconds = 180; showDone = false }
-                }
-                DurationChip(5, selectedMinutes, isRunning) {
-                    if (!isRunning) { selectedMinutes = 5; remainingSeconds = 300; showDone = false }
-                }
-                DurationChip(10, selectedMinutes, isRunning) {
-                    if (!isRunning) { selectedMinutes = 10; remainingSeconds = 600; showDone = false }
-                }
+                DurationChip(3, selectedMinutes, isRunning) { onSelectMinutes(3) }
+                DurationChip(5, selectedMinutes, isRunning) { onSelectMinutes(5) }
+                DurationChip(10, selectedMinutes, isRunning) { onSelectMinutes(10) }
             }
 
             Button(
                 onClick = {
                     if (isRunning) {
-                        isRunning = false
-                        remainingSeconds = selectedMinutes * 60
+                        onStop()
                     } else if (showDone) {
-                        showDone = false
-                        remainingSeconds = selectedMinutes * 60
+                        onReset()
                     } else {
-                        isRunning = true
-                        remainingSeconds = selectedMinutes * 60
+                        onStart()
                     }
                 },
                 modifier = Modifier

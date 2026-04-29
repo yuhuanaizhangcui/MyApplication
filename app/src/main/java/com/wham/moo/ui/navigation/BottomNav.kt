@@ -52,14 +52,14 @@ val bottomNavItems = listOf(
 @Composable
 fun BottomNavBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    val currentDestination = navBackStackEntry?.destination
 
     NavigationBar(
         containerColor = StellaSoft,
         tonalElevation = 0.dp
     ) {
         bottomNavItems.forEach { item ->
-            val selected = currentRoute == item.route
+            val selected = currentDestination?.route == item.route
             val scale by animateFloatAsState(
                 targetValue = if (selected) 1.1f else 1f,
                 animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
@@ -68,11 +68,13 @@ fun BottomNavBar(navController: NavController) {
             NavigationBarItem(
                 selected = selected,
                 onClick = {
-                    if (currentRoute != item.route) {
-                        navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
+                    if (currentDestination?.route != item.route) {
+                        val popped = navController.popBackStack(item.route, inclusive = false, saveState = false)
+                        if (!popped) {
+                            navController.navigate(item.route) {
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     }
                 },
