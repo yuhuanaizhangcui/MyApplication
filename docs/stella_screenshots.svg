@@ -1,0 +1,194 @@
+<svg role="img" aria-labelledby="stella-title stella-desc" viewBox="0 0 680 520" xmlns="http://www.w3.org/2000/svg">
+  <title id="stella-title">Stella 健康应用界面设计</title>
+  <desc id="stella-desc">Stella 健康追踪应用的四个主要页面：首页、日记、心愿单和心理</desc>
+  
+  <rect width="680" height="520" fill="#F1EFE8" rx="12"/>
+  
+  <text x="340" y="32" font-family="system-ui, sans-serif" font-size="16" font-weight="500" fill="#444441" text-anchor="middle">Stella 健康应用 - 界面设计</text>
+  
+  <!-- 2x2 Grid Layout -->
+  <!-- ========== 第1个手机 - 首页 ========== -->
+  <g transform="translate(50, 55)">
+    <rect width="135" height="290" rx="18" fill="#2C2C2A"/>
+    <rect x="5" y="5" width="125" height="280" rx="15" fill="#FFFFFF"/>
+    
+    <text x="67" y="35" font-family="system-ui" font-size="9" font-weight="500" fill="#2C2C2A" text-anchor="middle">首页</text>
+    
+    <rect x="10" y="45" width="115" height="55" rx="10" fill="#EEEDFE"/>
+    <text x="18" y="60" font-family="system-ui" font-size="8" fill="#534AB7">下午好</text>
+    <text x="18" y="75" font-family="system-ui" font-size="11" font-weight="500" fill="#3C3489">😊 良好</text>
+    
+    <text x="12" y="115" font-family="system-ui" font-size="8" font-weight="500" fill="#444441">本周情绪</text>
+    <g transform="translate(12, 120)">
+      <rect width="10" height="35" rx="2" fill="#CECBF6"/>
+      <rect y="18" width="10" height="17" rx="2" fill="#7F77DD"/>
+    </g>
+    <g transform="translate(28, 120)">
+      <rect width="10" height="35" rx="2" fill="#CECBF6"/>
+      <rect y="8" width="10" height="27" rx="2" fill="#7F77DD"/>
+    </g>
+    <g transform="translate(44, 120)">
+      <rect width="10" height="35" rx="2" fill="#CECBF6"/>
+      <rect y="15" width="10" height="20" rx="2" fill="#7F77DD"/>
+    </g>
+    <g transform="translate(60, 120)">
+      <rect width="10" height="35" rx="2" fill="#AFA9EC"/>
+      <rect y="3" width="10" height="32" rx="2" fill="#534AB7"/>
+    </g>
+    
+    <rect x="10" y="162" width="30" height="30" rx="8" fill="#E1F5EE"/>
+    <text x="25" y="182" font-family="system-ui" font-size="12" text-anchor="middle">📝</text>
+    <rect x="45" y="162" width="30" height="30" rx="8" fill="#FAEEDA"/>
+    <text x="60" y="182" font-family="system-ui" font-size="12" text-anchor="middle">✨</text>
+    <rect x="80" y="162" width="30" height="30" rx="8" fill="#E6F1FB"/>
+    <text x="95" y="182" font-family="system-ui" font-size="12" text-anchor="middle">🧠</text>
+    
+    <rect x="10" y="200" width="115" height="40" rx="8" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.5"/>
+    <text x="18" y="215" font-family="system-ui" font-size="7" fill="#888780">4月29日</text>
+    <text x="18" y="228" font-family="system-ui" font-size="8" fill="#444441">完成运动计划...</text>
+    
+    <rect x="5" y="265" width="125" height="18" rx="0" fill="#FFFFFF"/>
+    <rect x="33" y="268" width="12" height="12" rx="6" fill="#EEEDFE"/>
+    <text x="53" y="277" font-family="system-ui" font-size="9" text-anchor="middle">🏠</text>
+    <text x="67" y="277" font-family="system-ui" font-size="9" text-anchor="middle">📝</text>
+    <text x="92" y="277" font-family="system-ui" font-size="9" text-anchor="middle">✨</text>
+    <text x="107" y="277" font-family="system-ui" font-size="9" text-anchor="middle">🧠</text>
+  </g>
+  
+  <!-- ========== 第2个手机 - 日记页 ========== -->
+  <g transform="translate(220, 55)">
+    <rect width="135" height="290" rx="18" fill="#2C2C2A"/>
+    <rect x="5" y="5" width="125" height="280" rx="15" fill="#FFFFFF"/>
+    
+    <text x="67" y="35" font-family="system-ui" font-size="9" font-weight="500" fill="#2C2C2A" text-anchor="middle">日记</text>
+    <rect x="108" y="26" width="18" height="18" rx="5" fill="#EEEDFE"/>
+    <text x="117" y="38" font-family="system-ui" font-size="11" text-anchor="middle">+</text>
+    
+    <g transform="translate(12, 48)">
+      <text x="10" y="0" font-family="system-ui" font-size="6" fill="#888780" text-anchor="middle">一</text>
+      <text x="22" y="0" font-family="system-ui" font-size="6" fill="#888780" text-anchor="middle">二</text>
+      <text x="34" y="0" font-family="system-ui" font-size="6" fill="#888780" text-anchor="middle">三</text>
+      <text x="46" y="0" font-family="system-ui" font-size="6" fill="#888780" text-anchor="middle">四</text>
+      <text x="58" y="0" font-family="system-ui" font-size="6" fill="#888780" text-anchor="middle">五</text>
+      <text x="70" y="0" font-family="system-ui" font-size="6" fill="#888780" text-anchor="middle">六</text>
+      <text x="82" y="0" font-family="system-ui" font-size="6" fill="#888780" text-anchor="middle">日</text>
+      <rect x="34" y="6" width="12" height="12" rx="6" fill="#7F77DD"/>
+      <text x="40" y="15" font-family="system-ui" font-size="6" font-weight="500" fill="#FFF" text-anchor="middle">1</text>
+    </g>
+    
+    <text x="12" y="95" font-family="system-ui" font-size="8" font-weight="500" fill="#444441">全部日记</text>
+    
+    <rect x="10" y="103" width="115" height="48" rx="8" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.5"/>
+    <rect x="16" y="111" width="28" height="28" rx="6" fill="#EEEDFE"/>
+    <text x="30" y="130" font-family="system-ui" font-size="11" text-anchor="middle">😊</text>
+    <text x="50" y="115" font-family="system-ui" font-size="7" font-weight="500" fill="#444441">4月29日</text>
+    <text x="50" y="128" font-family="system-ui" font-size="8" fill="#888780">完成运动计划...</text>
+    <text x="50" y="140" font-family="system-ui" font-size="6" fill="#B4B2A9">运动</text>
+    
+    <rect x="10" y="156" width="115" height="48" rx="8" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.5"/>
+    <rect x="16" y="164" width="28" height="28" rx="6" fill="#E1F5EE"/>
+    <text x="30" y="183" font-family="system-ui" font-size="11" text-anchor="middle">😌</text>
+    <text x="50" y="168" font-family="system-ui" font-size="7" font-weight="500" fill="#444441">4月28日</text>
+    <text x="50" y="181" font-family="system-ui" font-size="8" fill="#888780">周末休息...</text>
+    <text x="50" y="193" font-family="system-ui" font-size="6" fill="#B4B2A9">社交</text>
+    
+    <rect x="10" y="209" width="115" height="48" rx="8" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.5"/>
+    <rect x="16" y="217" width="28" height="28" rx="6" fill="#FAEEDA"/>
+    <text x="30" y="236" font-family="system-ui" font-size="11" text-anchor="middle">😢</text>
+    <text x="50" y="221" font-family="system-ui" font-size="7" font-weight="500" fill="#444441">4月27日</text>
+    <text x="50" y="234" font-family="system-ui" font-size="8" fill="#888780">工作压力大...</text>
+    <text x="50" y="246" font-family="system-ui" font-size="6" fill="#B4B2A9">工作</text>
+    
+    <rect x="5" y="265" width="125" height="18" rx="0" fill="#FFFFFF"/>
+    <rect x="33" y="268" width="12" height="12" rx="6" fill="#EEEDFE"/>
+    <text x="53" y="277" font-family="system-ui" font-size="9" text-anchor="middle">🏠</text>
+    <text x="67" y="277" font-family="system-ui" font-size="9" text-anchor="middle">📝</text>
+    <text x="92" y="277" font-family="system-ui" font-size="9" text-anchor="middle">✨</text>
+    <text x="107" y="277" font-family="system-ui" font-size="9" text-anchor="middle">🧠</text>
+  </g>
+  
+  <!-- ========== 第3个手机 - 心愿单 ========== -->
+  <g transform="translate(50, 250)">
+    <rect width="135" height="260" rx="18" fill="#2C2C2A"/>
+    <rect x="5" y="5" width="125" height="250" rx="15" fill="#FFFFFF"/>
+    
+    <text x="67" y="30" font-family="system-ui" font-size="9" font-weight="500" fill="#2C2C2A" text-anchor="middle">心愿单</text>
+    <rect x="108" y="21" width="18" height="18" rx="5" fill="#FAEEDA"/>
+    <text x="117" y="33" font-family="system-ui" font-size="11" text-anchor="middle">+</text>
+    
+    <rect x="10" y="42" width="115" height="45" rx="10" fill="#FAEEDA"/>
+    <text x="18" y="55" font-family="system-ui" font-size="7" fill="#854F0B">已完成 2/5</text>
+    <rect x="18" y="62" width="99" height="5" rx="2.5" fill="#FAC775"/>
+    <rect x="18" y="62" width="40" height="5" rx="2.5" fill="#BA7517"/>
+    <text x="18" y="78" font-family="system-ui" font-size="14" font-weight="500" fill="#633806">40%</text>
+    
+    <rect x="10" y="95" width="115" height="35" rx="8" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.5"/>
+    <circle cx="22" cy="112" r="7" fill="#EAF3DE" stroke="#97C459" stroke-width="1.5"/>
+    <text x="22" y="115" font-family="system-ui" font-size="7" fill="#3B6D11" text-anchor="middle">✓</text>
+    <text x="35" y="108" font-family="system-ui" font-size="8" fill="#888780" text-decoration="line-through">去日本旅游</text>
+    <text x="35" y="120" font-family="system-ui" font-size="6" fill="#B4B2A9">已完成</text>
+    
+    <rect x="10" y="135" width="115" height="35" rx="8" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.5"/>
+    <circle cx="22" cy="152" r="7" fill="#FFFFFF" stroke="#FAC775" stroke-width="1.5"/>
+    <text x="35" y="148" font-family="system-ui" font-size="8" fill="#444441">学会弹吉他</text>
+    <rect x="35" y="155" width="60" height="4" rx="2" fill="#F1EFE8"/>
+    <rect x="35" y="155" width="30" height="4" rx="2" fill="#FAC775"/>
+    
+    <rect x="10" y="175" width="115" height="35" rx="8" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.5"/>
+    <circle cx="22" cy="192" r="7" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="1"/>
+    <text x="35" y="188" font-family="system-ui" font-size="8" fill="#444441">读完《原子习惯》</text>
+    <text x="35" y="200" font-family="system-ui" font-size="6" fill="#B4B2A9">未开始</text>
+    
+    <rect x="5" y="235" width="125" height="18" rx="0" fill="#FFFFFF"/>
+    <rect x="33" y="238" width="12" height="12" rx="6" fill="#EEEDFE"/>
+    <text x="53" y="247" font-family="system-ui" font-size="9" text-anchor="middle">🏠</text>
+    <text x="67" y="247" font-family="system-ui" font-size="9" text-anchor="middle">📝</text>
+    <text x="92" y="247" font-family="system-ui" font-size="9" text-anchor="middle">✨</text>
+    <text x="107" y="247" font-family="system-ui" font-size="9" text-anchor="middle">🧠</text>
+  </g>
+  
+  <!-- ========== 第4个手机 - 心理页 ========== -->
+  <g transform="translate(220, 250)">
+    <rect width="135" height="260" rx="18" fill="#2C2C2A"/>
+    <rect x="5" y="5" width="125" height="250" rx="15" fill="#FFFFFF"/>
+    
+    <text x="67" y="30" font-family="system-ui" font-size="9" font-weight="500" fill="#2C2C2A" text-anchor="middle">心理健康</text>
+    
+    <rect x="10" y="40" width="115" height="65" rx="10" fill="#E6F1FB"/>
+    <text x="18" y="52" font-family="system-ui" font-size="7" fill="#185FA5">心理健康指数</text>
+    <text x="18" y="75" font-family="system-ui" font-size="22" font-weight="500" fill="#378ADD">78</text>
+    <text x="50" y="75" font-family="system-ui" font-size="8" fill="#185FA5">/ 100</text>
+    <text x="70" y="62" font-family="system-ui" font-size="7" fill="#85B7EB">良好</text>
+    
+    <text x="12" y="118" font-family="system-ui" font-size="8" font-weight="500" fill="#444441">情绪分布</text>
+    <rect x="10" y="124" width="115" height="40" rx="8" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.5"/>
+    <circle cx="20" cy="138" r="5" fill="#7F77DD"/>
+    <text x="30" y="141" font-family="system-ui" font-size="6" fill="#444441">开心 35%</text>
+    <circle cx="75" cy="138" r="5" fill="#1D9E75"/>
+    <text x="85" y="141" font-family="system-ui" font-size="6" fill="#444441">平静 28%</text>
+    <circle cx="20" cy="155" r="5" fill="#378ADD"/>
+    <text x="30" y="158" font-family="system-ui" font-size="6" fill="#444441">焦虑 20%</text>
+    <circle cx="75" cy="155" r="5" fill="#EF9F27"/>
+    <text x="85" y="158" font-family="system-ui" font-size="6" fill="#444441">低落 17%</text>
+    
+    <text x="12" y="178" font-family="system-ui" font-size="8" font-weight="500" fill="#444441">今日建议</text>
+    <rect x="10" y="184" width="115" height="45" rx="8" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.5"/>
+    <rect x="16" y="192" width="22" height="22" rx="6" fill="#E1F5EE"/>
+    <text x="27" y="208" font-family="system-ui" font-size="11" text-anchor="middle">🧘</text>
+    <text x="44" y="198" font-family="system-ui" font-size="8" font-weight="500" fill="#444441">深呼吸放松</text>
+    <text x="44" y="212" font-family="system-ui" font-size="7" fill="#888780">每天5分钟练习</text>
+    
+    <rect x="5" y="235" width="125" height="18" rx="0" fill="#FFFFFF"/>
+    <rect x="33" y="238" width="12" height="12" rx="6" fill="#EEEDFE"/>
+    <text x="53" y="247" font-family="system-ui" font-size="9" text-anchor="middle">🏠</text>
+    <text x="67" y="247" font-family="system-ui" font-size="9" text-anchor="middle">📝</text>
+    <text x="92" y="247" font-family="system-ui" font-size="9" text-anchor="middle">✨</text>
+    <text x="107" y="247" font-family="system-ui" font-size="9" text-anchor="middle">🧠</text>
+  </g>
+  
+  <!-- 页面标签 -->
+  <text x="117" y="320" font-family="system-ui" font-size="10" fill="#444441" text-anchor="middle">首页 HomeScreen</text>
+  <text x="287" y="320" font-family="system-ui" font-size="10" fill="#444441" text-anchor="middle">日记 DiaryScreen</text>
+  <text x="117" y="515" font-family="system-ui" font-size="10" fill="#444441" text-anchor="middle">心愿 WishScreen</text>
+  <text x="287" y="515" font-family="system-ui" font-size="10" fill="#444441" text-anchor="middle">心理 MindScreen</text>
+</svg>
