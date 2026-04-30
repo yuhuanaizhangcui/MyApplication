@@ -193,7 +193,11 @@ fun ProfileScreen(viewModel: StellaViewModel) {
     }
 
     if (showSettings) {
-        SettingsDialog(onDismiss = { showSettings = false })
+        SettingsDialog(
+            darkMode = viewModel.darkMode.collectAsState().value,
+            onDarkModeChange = { viewModel.setDarkMode(it) },
+            onDismiss = { showSettings = false }
+        )
     }
 
     if (showReminders) {
@@ -293,14 +297,13 @@ fun NicknameDialog(current: String, onConfirm: (String) -> Unit, onDismiss: () -
 }
 
 @Composable
-fun SettingsDialog(onDismiss: () -> Unit) {
+fun SettingsDialog(darkMode: Boolean, onDarkModeChange: (Boolean) -> Unit, onDismiss: () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
         StellaCard {
             Column(modifier = Modifier.padding(20.dp)) {
                 Text("设置", fontWeight = FontWeight.Bold, fontSize = 17.sp, color = StellaTextMain)
                 Spacer(modifier = Modifier.height(16.dp))
-                var darkMode by remember { mutableStateOf(false) }
-                SettingsSwitchItem("深色模式", darkMode) { darkMode = it }
+                SettingsSwitchItem("深色模式", darkMode) { onDarkModeChange(it) }
                 Spacer(modifier = Modifier.height(8.dp))
                 var soundEnabled by remember { mutableStateOf(true) }
                 SettingsSwitchItem("音效", soundEnabled) { soundEnabled = it }

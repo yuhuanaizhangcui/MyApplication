@@ -4,13 +4,21 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.wham.moo.data.entity.DiaryEntry
 import com.wham.moo.data.entity.MeditationSession
 import com.wham.moo.data.entity.Wish
 
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE diary_entries ADD COLUMN imageUris TEXT NOT NULL DEFAULT ''")
+    }
+}
+
 @Database(
     entities = [DiaryEntry::class, Wish::class, MeditationSession::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class StellaDatabase : RoomDatabase() {
@@ -28,9 +36,11 @@ abstract class StellaDatabase : RoomDatabase() {
                     context.applicationContext,
                     StellaDatabase::class.java,
                     "stella_database"
-                ).build().also {
-                    INSTANCE = it
-                }
+                )
+                    .addMigrations(MIGRATION_1_2)
+                    .build().also {
+                        INSTANCE = it
+                    }
             }
         }
     }

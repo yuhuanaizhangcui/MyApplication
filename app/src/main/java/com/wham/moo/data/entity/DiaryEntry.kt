@@ -11,5 +11,6 @@ data class DiaryEntry(
     val mood: String,
     val content: String,
     val time: String,
+    val imageUris: String = "",
     val createdAt: Long = System.currentTimeMillis()
 )

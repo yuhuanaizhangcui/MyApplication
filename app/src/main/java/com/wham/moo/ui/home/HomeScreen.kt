@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,6 +39,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.runtime.remember
+import coil.compose.AsyncImage
 import androidx.navigation.NavController
 import com.wham.moo.data.entity.DiaryEntry
 import com.wham.moo.data.entity.Wish
@@ -90,7 +94,7 @@ fun HomeScreen(viewModel: StellaViewModel, navController: NavController) {
         QuickActions(navController, wishes.firstOrNull())
         Spacer(modifier = Modifier.height(20.dp))
         SectionHeader(title = "最近日记")
-        RecentDiaries(diaries.filter { !it.content.startsWith("今日心情：") }.take(3))
+        RecentDiaries(diaries.filter { !it.content.startsWith("今日心情：") }.take(3), navController)
         Spacer(modifier = Modifier.height(80.dp))
     }
 }
@@ -103,6 +107,19 @@ fun GreetingHeader() {
         hour < 18 -> "下午好"
         else -> "晚上好"
     }
+    val today = Calendar.getInstance()
+    val month = today.get(Calendar.MONTH) + 1
+    val day = today.get(Calendar.DAY_OF_MONTH)
+    val weekDay = when (today.get(Calendar.DAY_OF_WEEK)) {
+        Calendar.MONDAY -> "周一"
+        Calendar.TUESDAY -> "周二"
+        Calendar.WEDNESDAY -> "周三"
+        Calendar.THURSDAY -> "周四"
+        Calendar.FRIDAY -> "周五"
+        Calendar.SATURDAY -> "周六"
+        Calendar.SUNDAY -> "周日"
+        else -> ""
+    }
     Column {
         Text(
             text = "$greeting ✨",
@@ -111,10 +128,16 @@ fun GreetingHeader() {
             color = StellaTextMain
         )
         Text(
+            text = "$month 月 $day 日  $weekDay",
+            fontSize = 14.sp,
+            color = StellaTextSub,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+        Text(
             text = "愿今日温柔相伴，内心平静",
             fontSize = 15.sp,
             color = StellaTextSub,
-            modifier = Modifier.padding(top = 4.dp)
+            modifier = Modifier.padding(top = 2.dp)
         )
     }
 }
@@ -351,7 +374,7 @@ fun QuickActions(navController: NavController, latestWish: Wish?) {
 }
 
 @Composable
-fun RecentDiaries(diaries: List<DiaryEntry>) {
+fun RecentDiaries(diaries: List<DiaryEntry>, navController: NavController) {
     if (diaries.isEmpty()) {
         Text(
             text = "还没有日记，去写一篇吧 ✍️",
@@ -365,16 +388,27 @@ fun RecentDiaries(diaries: List<DiaryEntry>) {
     } else {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             diaries.forEach { diary ->
-                DiaryCard(diary)
+                DiaryCard(diary, navController)
             }
         }
     }
 }
 
 @Composable
-fun DiaryCard(diary: DiaryEntry) {
+fun DiaryCard(diary: DiaryEntry, navController: NavController) {
     val (icon, iconColor, bgColor) = moodConfig(diary.mood)
-    StellaCard {
+    val images = remember(diary.imageUris) {
+        diary.imageUris.split(",").filter { it.isNotBlank() }
+    }
+    StellaCard(
+        onClick = {
+            val encodedUris = android.net.Uri.encode(diary.imageUris)
+            val encodedContent = android.net.Uri.encode(diary.content)
+            navController.navigate(
+                "diary_detail/${diary.id}/$encodedContent/${diary.mood}/${diary.time}/${diary.date}/$encodedUris"
+            )
+        }
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -409,6 +443,10 @@ fun DiaryCard(diary: DiaryEntry) {
                     modifier = Modifier.padding(top = 4.dp),
                     maxLines = 2
                 )
+                if (images.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    HomeImageGrid(imageUris = images)
+                }
             }
         }
     }
@@ -427,4 +465,64 @@ fun currentDate(): String {
     val cal = Calendar.getInstance()
     return String.format(Locale.getDefault(), "%04d-%02d-%02d",
         cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH))
+}
+
+/**
+ * 首页日记卡片中的图片九宫格组件（最多展示3张，保持卡片紧凑）
+ */
+@Composable
+fun HomeImageGrid(imageUris: List<String>, modifier: Modifier = Modifier) {
+    if (imageUris.isEmpty()) return
+
+    // 首页卡片最多展示3张图，保持紧凑
+    val displayUris = imageUris.take(3)
+    val count = displayUris.size
+    val columns = if (count == 1) 1 else 3
+    val spacing = 4.dp
+
+    if (count == 1) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth(0.5f)
+                .height(100.dp)
+                .clip(RoundedCornerShape(8.dp))
+        ) {
+            AsyncImage(
+                model = displayUris[0],
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+    } else {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(spacing)
+        ) {
+            displayUris.forEach { uri ->
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(4.dp))
+                ) {
+                    AsyncImage(
+                        model = uri,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+        }
+        // 如果超过3张，显示剩余数量提示
+        if (imageUris.size > 3) {
+            Text(
+                text = "共 ${imageUris.size} 张图片",
+                fontSize = 11.sp,
+                color = StellaTextLight,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+    }
 }

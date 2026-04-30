@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.wham.moo.StellaApplication
+import com.wham.moo.data.ImageUtils
 import com.wham.moo.data.entity.DiaryEntry
 import com.wham.moo.data.entity.MeditationSession
 import com.wham.moo.data.entity.Wish
@@ -28,6 +29,9 @@ class StellaViewModel(application: Application) : AndroidViewModel(application) 
 
     private val _avatarIndex = MutableStateFlow(prefs.getInt("avatar_index", 0))
     val avatarIndex: StateFlow<Int> = _avatarIndex
+
+    private val _darkMode = MutableStateFlow(prefs.getBoolean("dark_mode", false))
+    val darkMode: StateFlow<Boolean> = _darkMode
 
     val allDiaries = repository.allDiaries.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
@@ -73,10 +77,25 @@ class StellaViewModel(application: Application) : AndroidViewModel(application) 
         _selectedDate.value = date
     }
 
-    fun addDiary(content: String, mood: String, date: String) {
+    fun addDiary(content: String, mood: String, date: String, imageUris: List<String> = emptyList()) {
         val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Calendar.getInstance().time)
         viewModelScope.launch {
-            repository.addDiary(DiaryEntry(date = date, mood = mood, content = content, time = time))
+            // 将 content:// URI 复制到内部存储，保证重启后图片仍然可访问
+            val appContext = getApplication<Application>()
+            val localImageUris = if (imageUris.isNotEmpty()) {
+                ImageUtils.copyImagesToInternalStorage(appContext, imageUris)
+            } else {
+                emptyList()
+            }
+            repository.addDiary(
+                DiaryEntry(
+                    date = date,
+                    mood = mood,
+                    content = content,
+                    time = time,
+                    imageUris = localImageUris.joinToString(",")
+                )
+            )
         }
     }
 
@@ -90,7 +109,21 @@ class StellaViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun deleteDiary(id: Long) {
-        viewModelScope.launch { repository.deleteDiary(id) }
+        viewModelScope.launch {
+            // 先查询日记获取图片路径，再删除
+            val diaries = repository.allDiaries
+            val diary = try {
+                // 从已加载的 diaries 中查找，避免额外查询
+                allDiaries.value.find { it.id == id }
+            } catch (_: Exception) { null }
+
+            repository.deleteDiary(id)
+
+            // 删除关联的本地图片
+            diary?.let {
+                ImageUtils.deleteImages(getApplication(), it.imageUris)
+            }
+        }
     }
 
     fun addWish(title: String, progress: Int) {
@@ -128,6 +161,11 @@ class StellaViewModel(application: Application) : AndroidViewModel(application) 
     fun setAvatarIndex(index: Int) {
         _avatarIndex.value = index
         prefs.edit().putInt("avatar_index", index).apply()
+    }
+
+    fun setDarkMode(enabled: Boolean) {
+        _darkMode.value = enabled
+        prefs.edit().putBoolean("dark_mode", enabled).apply()
     }
 }
 
